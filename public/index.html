@@ -59,14 +59,17 @@ var SearchComponent = React.createClass({
   },
   searchingEvent: function(e){
      var searching = e.target.value;
-     console.log(this.state);
      var books=this.state.books.slice();
+     searching=searching.toString().toLowerCase()
      if(searching.length > 0){
-        console.log(books);
+        books=books.filter(function(it){
+          return it.name.toString().toLowerCase().indexOf(searching) > -1;
+        });
+        this.setState({books:books});
+     }else{
+        this.setState({books:this.props.items});
      }
-
-     this.setState({books:books});
-  }.bind(this),
+  },
   render:function(){
    
     var books= this.state.books.map(function(element){
