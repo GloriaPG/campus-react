@@ -21,168 +21,72 @@
     <script type="text/babel" src="scripts/example.js"></script>
     <script type="text/babel">
 
-  var ListComponent = React.createClass({
-
-   getInitialState: function () {
-          return {lista: []};
-        },
-        componentDidMount: function () {
-          $.ajax({
-            url: '/api/comments',
-            dataType: 'json',
-            cache: false,
-            success: function (data) {
-              var vincos = data.map(function(elemento) {
-                return {
-                  id: elemento.id,
-                  nombre: elemento.author,
-                  area: elemento.text
-                };
-              });
-              this.setState({lista: vincos});
-            }.bind(this),
-            error: function () {
-              console.log(':(');
-            }.bind(this)
-          });
-        },
-        agregarVinco: function (vinco) {
-          var vincos = this.state.lista;
-          vincos.push(vinco);
-          this.setState({lista: vincos});
-        },
-        render: function () {
-          var nodos = this.state.lista.map(function(vinco) {
-            return (
-              <ItemComponent titulo={vinco.nombre}>{vinco.area}</ItemComponent>
-            );
-          });
-          return (
-            <div className="list">
-            Hola Mundo
-            {nodos}
-            <FormComponent agregar={this.agregarVinco} />
-            </div>
-          );
-        }
-      });
-
-      var ItemComponent = React.createClass({
-        render: function () {
-          return (
-            <div className="item">
-            <div>{this.props.titulo}</div>
-              {this.props.children}
-            </div>
-          );
-        }
-      });
-
-      var FormComponent = React.createClass({
-        getInitialState: function(){
-          return{nombre:'',area:''};    
-        },
-        cambiarNombre: function(e){
-          this.setState({nombre:e.target.value});
-        },
-        cambiarArea: function(e){
-          this.setState({area:e.target.value});
-        },
-        guardar: function(e){
-          e.preventDefault();
-          this.props.agregar(this.state);
-          this.setState({
-            nombre: '',
-            area: ''
-          });
-        },
-        render : function(){
-          return(
-            <form className="commentForm" onSubmit={this.guardar}>
-              <div>
-                <input
-                  type="text"
-                  placeholder="Nombre"
-                  value={this.state.nombre}
-                  onChange={this.cambiarNombre}
-                />
-              </div>
-              <input
-                type="text"
-                placeholder="Area"
-                value={this.state.area}
-                onChange={this.cambiarArea}
-              />
-              <input type="submit" value="Guardar" />
-            </form>
-          );
-        }
-      });
-      
     var MenuComponent = React.createClass({
-
-    getInitialState: function(){
-        return { focus: 0 };
-    },
-    changeFocus: function(index){
-        this.setState({focus: index});
-    },
-    render: function() {
-        var self = this;
-        return (
-            <div>
-                <ul>{ this.props.items.map(function(title, index){
-        
-                    var style = '';
-        
-                    if(self.state.focus == index){
-                        style = 'selected';
-                    }
-        
-                    return <li className={style} onClick={self.changeFocus.bind(self, index)}>{title}</li>;
-        
-                }) }
-                        
-                </ul>
-                <h1>Menu item selected: {this.props.items[this.state.focus]}</h1>
-            </div>
-    );
-
-    }
-});
+        getInitialState: function(){
+            return { focus: 0 };
+        },
+        changeFocus: function(index){
+            this.setState({focus: index});
+        },
+        render: function() {
+            var self = this;
+            return (
+                <div>
+                    <ul>{ this.props.items.map(function(title, index){
+            
+                        var style = '';
+            
+                        if(self.state.focus == index){
+                            style = 'selected';
+                        }
+            
+                        return <li className={style} onClick={self.changeFocus.bind(self, index)}>{title}</li>;
+            
+                    }) }
+                            
+                    </ul>
+                    <h1>Menu item selected: {this.props.items[this.state.focus]}</h1>
+                </div>
+            );
+        }
+    });
 
 var SearchComponent = React.createClass({
   getInitialState:function(){
-    return {searching:''};
+    return {
+      books:this.props.items
+    };
   },
   searchingEvent: function(e){
-    this.setState({searching:e.target.value});
-  },
-  render:function{
-    var books= this.props.items,
-    searching=this.state.searching.trim().toLowerCase();
-    if(result.length > 0){
-      books=books.filter(function(index){
-        return index.name.toLowerCase().match(searching);
-      });
-    }
+     var searching = e.target.value;
+     console.log(this.state);
+     var books=this.state.books.slice();
+     if(searching.length > 0){
+        console.log(books);
+     }
+
+     this.setState({books:books});
+  }.bind(this),
+  render:function(){
+   
+    var books= this.state.books.map(function(element){
+    
+      return (<div>{element.name}</div>);
+    });
+
     return (
-        <div>
-          <input type="text" value={this.state.searching} onChange={this.searchingEvent} placeholder="Search..." />
-          <ul> 
-            { books.map(function(item){
-                return <li>{item.name}</li>
-              }) 
-            }
-          </ul>
-          </div>
-      );
+      <div>
+      <input type="text" id="searchinput" onChange={this.searchingEvent} placeholder="search..."/>
+       <div>{books}</div>
+      </div>
+     
+    );
   }
 
 });
 
-var books = [
 
+var books = [
     { name: 'Titanium'},
     { name: 'React'},
     { name: 'React Native'},
@@ -194,14 +98,12 @@ var books = [
     { name: 'PHP'},
     { name: '100 años de Soledad'},
     { name: 'Las batallas :3'},
-
 ];
 
 	   ReactDOM.render(
           <div>
-          <ListComponent/>
           <MenuComponent items={ ['Home','About','Contact'] }/>
-          <SearchComponent items={ books }/>
+          <SearchComponent items={books}/>
           </div>,
           document.getElementById("content")
       );
